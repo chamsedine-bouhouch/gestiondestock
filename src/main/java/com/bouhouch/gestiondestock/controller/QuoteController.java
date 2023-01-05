@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.bouhouch.gestiondestock.model.Quote;
 import com.bouhouch.gestiondestock.repository.QuoteRepository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 @RestController
 public class QuoteController {
@@ -20,20 +17,24 @@ public class QuoteController {
 
     @GetMapping("/quotes")
     public List<Quote> getQuotes(@RequestParam("search") Optional<String> searchParam) {
-        return searchParam.map(param -> quoteRepository.getContaingQuote(param))
-                .orElse(quoteRepository.findAll());
+        return searchParam.map(param -> quoteRepository.getContaingQuote(param)).orElse(quoteRepository.findAll());
     }
 
     @GetMapping("/quotes/{quoteId}")
-    public ResponseEntity<String>readQuote(@PathVariable("quoteId")Long id){
+    public ResponseEntity<String> readQuote(@PathVariable("quoteId") Long id) {
         return ResponseEntity.of(quoteRepository.findById(id).map(Quote::getQuote));
     }
 
-    @PostMapping(value="/quotes")
+    @PostMapping(value = "/quotes")
     public Quote addQuote(@RequestBody String quote) {
-        Quote q= new Quote();
-        q.setQuote(quote);  
+        Quote q = new Quote();
+        q.setQuote(quote);
         return quoteRepository.save(q);
     }
-    
+
+    @RequestMapping(value = "/quotes/{quoteId}", method = RequestMethod.DELETE)
+    public void deleteQuote(@PathVariable(value = "quoteId") Long id) {
+        quoteRepository.deleteById(id);
+    }
+
 }
